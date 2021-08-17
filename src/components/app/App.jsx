@@ -1,37 +1,53 @@
-import React, { useState } from 'react';
+/* eslint-disable max-len */
+import React, { useState, useReducer } from 'react';
+import { initialState, reducer } from '../../state/Reducer';
 
-const useRecord = (init) => {
-  const [before, setBefore] = useState([]);
-  const [current, setCurrent] = useState(init);
-  const [after, setAfter] = useState([]);
+// const useRecord = (init) => {
+  
 
-  const undo = () => {
-    setAfter((after) => [current, ...after]);
-    setCurrent(before[before.length - 1]);
-    setBefore((before) => before.slice(0, -1));
-  };
 
-  const redo = () => {
-    setBefore((before) => [...before, current]);
-    setCurrent(after[0]);
-    setAfter((after) => after.slice(1));
-  };
+  
 
-  const record = (val) => {
-    setBefore((before) => [...before, current]);
-    setCurrent(val);
-  };
 
-  return {
-    undo,
-    record,
-    redo,
-    current,
-  };
-};
+
+//   // const [before, setBefore] = useState([]);
+  
+//   // const [current, setCurrent] = useState(init);
+  
+//   // const [after, setAfter] = useState([]);
+
+//   const undo = () => {
+//     setAfter((after) => [current, ...after]);
+//     setCurrent(before[before.length - 1]);
+//     setBefore((before) => before.slice(0, -1));
+//   };
+
+//   const redo = () => {
+//     setBefore((before) => [...before, current]);
+//     setCurrent(after[0]);
+//     setAfter((after) => after.slice(1));
+//   };
+
+//   const record = (val) => {
+//     setBefore((before) => [...before, current]);
+//     setCurrent(val);
+//   };
+
+//   return {
+//     undo,
+//     record,
+//     redo,
+//     current,
+//   };
+// };
 
 function App() {
-  const { current, undo, redo, record } = useRecord('#FF0000');
+  // const { current, undo, redo, record } = useRecord('#FF0000');
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const undo = () => dispatch({ type: 'UNDO' });
+  const redo = () => dispatch({ type: 'REDO' });
+  const record = (value) => dispatch({ type: 'RECORD', payload: value });
 
   return (
     <>
@@ -40,12 +56,12 @@ function App() {
       <input
         data-testid="color-input"
         type="color"
-        value={current}
+        value={state.current}
         onChange={({ target }) => record(target.value)}
       />
       <div
         data-testid="display"
-        style={{ backgroundColor: current, width: '10rem', height: '10rem' }}
+        style={{ backgroundColor: state.current, width: '10rem', height: '10rem' }}
       ></div>
     </>
   );
